@@ -5,6 +5,9 @@ from django.db import models
 class TrainType(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
 
 class Train(models.Model):
     name = models.CharField(max_length=100)
@@ -16,11 +19,17 @@ class Train(models.Model):
         related_name="trains",
     )
 
+    def __str__(self):
+        return f"{self.name} ({self.places_in_cargo})"
+
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
+
+    def __str__(self):
+        return f"{self.name} ({self.latitude}, {self.longitude})"
 
 
 class Route(models.Model):
@@ -35,6 +44,10 @@ class Route(models.Model):
         related_name="routes_d",
     )
     distance = models.IntegerField()
+
+    def __str__(self):
+        return (f"{self.source.name} -> {self.destination.name}"
+                f" ({self.distance})")
 
 
 class Journey(models.Model):
@@ -51,6 +64,10 @@ class Journey(models.Model):
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
 
+    def __str__(self):
+        return (f"{self.train.name} - {self.route.__str__()} "
+                f"({self.departure_time}, {self.arrival_time})")
+
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -59,6 +76,9 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         related_name="orders",
     )
+
+    def __str__(self):
+        return str(self.created_at)
 
 
 class Ticket(models.Model):
@@ -75,7 +95,13 @@ class Ticket(models.Model):
         related_name="tickets",
     )
 
+    def __str__(self):
+        return f"{self.seat}, {self.cargo}"
+
 
 class Crew(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
