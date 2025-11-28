@@ -77,7 +77,15 @@ class CrewSerializer(serializers.ModelSerializer):
 class JourneySerializer(JourneyValidationMixin, serializers.ModelSerializer):
     class Meta:
         model = Journey
-        fields = ("id", "route", "train", "departure_time", "arrival_time", "crew")
+        fields = (
+            "id",
+            "route",
+            "train",
+            "departure_time",
+            "arrival_time",
+            "journey_time",
+            "crew"
+        )
 
 
 class JourneyListSerializer(JourneySerializer):
