@@ -6,6 +6,9 @@ from django.db import models
 class TrainType(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self):
         return self.name
 
@@ -19,6 +22,9 @@ class Train(models.Model):
         on_delete=models.CASCADE,
         related_name="trains",
     )
+
+    class Meta:
+        ordering = ["name"]
 
     @property
     def total_places(self):
@@ -34,6 +40,7 @@ class Station(models.Model):
     longitude = models.FloatField()
 
     class Meta:
+        ordering = ["name"]
         unique_together = ("latitude", "longitude")
 
     def __str__(self):
@@ -53,6 +60,9 @@ class Route(models.Model):
     )
     distance = models.IntegerField(validators=[MinValueValidator(1)])
 
+    class Meta:
+        ordering = ["distance"]
+
     @property
     def full_route(self):
         return f"{self.source.name} - {self.destination.name}"
@@ -64,6 +74,9 @@ class Route(models.Model):
 class Crew(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ["first_name", "last_name"]
 
     @property
     def full_name(self):
@@ -88,6 +101,9 @@ class Journey(models.Model):
     arrival_time = models.DateTimeField()
     crew = models.ManyToManyField(Crew)
 
+    class Meta:
+        ordering = ["departure_time"]
+
     @property
     def journey_time(self):
         return str(self.arrival_time - self.departure_time)
@@ -104,6 +120,9 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         related_name="orders",
     )
+
+    class Meta:
+        ordering = ["created_at"]
 
     def __str__(self):
         return str(self.created_at)
