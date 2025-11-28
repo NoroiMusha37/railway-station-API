@@ -1,4 +1,4 @@
-from django.db.models import Prefetch
+from django.db.models import Prefetch, F, Count
 from rest_framework import viewsets
 
 from railway.models import (
@@ -55,10 +55,15 @@ class RouteViewSet(viewsets.ModelViewSet):
 
 class JourneyViewSet(viewsets.ModelViewSet):
     queryset = (Journey.objects.all()
-                .prefetch_related("crew")
-                .select_related("route__source", "route__destination")
-                .select_related("train__train_type")
-                )
+    .prefetch_related("crew")
+    .select_related("route__source", "route__destination")
+    .select_related("train__train_type")
+    .annotate(
+        tickets_available=F("train__cargo_num")
+                          * F("train__places_in_cargo")
+                          - Count("tickets")
+    )
+    )
     serializer_class = JourneySerializer
 
     def get_serializer_class(self):

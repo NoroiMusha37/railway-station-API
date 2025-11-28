@@ -100,12 +100,44 @@ class JourneyListSerializer(JourneySerializer):
         read_only=True,
         slug_field="full_name",
     )
+    tickets_available = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Journey
+        fields = (
+            "id",
+            "route",
+            "train",
+            "departure_time",
+            "arrival_time",
+            "journey_time",
+            "crew",
+            "tickets_available",
+        )
 
 
 class JourneyDetailSerializer(JourneySerializer):
     route = RouteListSerializer(read_only=True)
     train = TrainSerializer(read_only=True)
     crew = CrewSerializer(many=True, read_only=True)
+    taken_places = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Journey
+        fields = (
+            "id",
+            "route",
+            "train",
+            "departure_time",
+            "arrival_time",
+            "journey_time",
+            "crew",
+            "taken_places",
+        )
+
+    @staticmethod
+    def get_taken_places(obj):
+        return list(obj.tickets.values("cargo", "seat"))
 
 
 class TicketSerializer(serializers.ModelSerializer):
