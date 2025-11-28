@@ -88,6 +88,10 @@ class Journey(models.Model):
     arrival_time = models.DateTimeField()
     crew = models.ManyToManyField(Crew)
 
+    @property
+    def journey_time(self):
+        return str(self.arrival_time - self.departure_time)
+
     def __str__(self):
         return (f"{self.train.name} - {self.route.__str__()} "
                 f"({self.departure_time}, {self.arrival_time})")
