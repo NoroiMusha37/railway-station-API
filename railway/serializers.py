@@ -109,7 +109,7 @@ class JourneyDetailSerializer(JourneySerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
-    journey = JourneyListSerializer(many=False, read_only=False)
+    journey = JourneyListSerializer(many=False, read_only=True)
 
     class Meta:
         model = Ticket
@@ -139,4 +139,4 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderListSerializer(OrderSerializer):
-    tickets = TicketSerializer(many=True, read_only=False)
+    tickets = TicketSerializer(many=True, read_only=True)

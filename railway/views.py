@@ -1,3 +1,4 @@
+from django.db.models import Prefetch
 from rest_framework import viewsets
 
 from railway.models import (
@@ -7,7 +8,7 @@ from railway.models import (
     Route,
     Journey,
     Order,
-    Crew,
+    Crew, Ticket,
 )
 from railway.serializers import (
     TrainTypeSerializer,
@@ -31,7 +32,7 @@ class TrainTypeViewSet(viewsets.ModelViewSet):
 
 
 class TrainViewSet(viewsets.ModelViewSet):
-    queryset = Train.objects.all()
+    queryset = Train.objects.all().select_related("train_type")
     serializer_class = TrainSerializer
 
 
@@ -41,7 +42,7 @@ class StationViewSet(viewsets.ModelViewSet):
 
 
 class RouteViewSet(viewsets.ModelViewSet):
-    queryset = Route.objects.all()
+    queryset = Route.objects.all().select_related("source", "destination")
     serializer_class = RouteSerializer
 
     def get_serializer_class(self):
@@ -53,7 +54,11 @@ class RouteViewSet(viewsets.ModelViewSet):
 
 
 class JourneyViewSet(viewsets.ModelViewSet):
-    queryset = Journey.objects.all()
+    queryset = (Journey.objects.all()
+                .prefetch_related("crew")
+                .select_related("route__source", "route__destination")
+                .select_related("train__train_type")
+                )
     serializer_class = JourneySerializer
 
     def get_serializer_class(self):
@@ -69,7 +74,18 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        return (Order.objects.filter(user=self.request.user)
+        .prefetch_related(
+            Prefetch(
+                "tickets",
+                queryset=Ticket.objects.select_related(
+                    "journey__train",
+                    "journey__route__source",
+                    "journey__route__destination",
+                ).prefetch_related("journey__crew")
+            )
+        )
+        )
 
     def get_serializer_class(self):
         if self.action == "list":

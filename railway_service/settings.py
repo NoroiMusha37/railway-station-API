@@ -73,6 +73,10 @@ TEMPLATES = [
     },
 ]
 
+DEBUG_TOOLBAR_CONFIG = {
+    "RENDER_PANELS": True,
+}
+
 WSGI_APPLICATION = "railway_service.wsgi.application"
 
 # Database
