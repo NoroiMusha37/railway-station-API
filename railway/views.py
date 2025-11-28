@@ -24,26 +24,39 @@ from railway.serializers import (
     OrderListSerializer,
     CrewSerializer,
 )
+from railway.filters import (
+    TrainTypeFilterSet,
+    TrainFilterSet,
+    StationFilterSet,
+    RouteFilterSet,
+    JourneyFilterSet,
+    OrderFilterSet,
+    CrewFilterSet,
+)
 
 
 class TrainTypeViewSet(viewsets.ModelViewSet):
     queryset = TrainType.objects.all()
     serializer_class = TrainTypeSerializer
+    filterset_class = TrainTypeFilterSet
 
 
 class TrainViewSet(viewsets.ModelViewSet):
     queryset = Train.objects.all().select_related("train_type")
     serializer_class = TrainSerializer
+    filterset_class = TrainFilterSet
 
 
 class StationViewSet(viewsets.ModelViewSet):
     queryset = Station.objects.all()
     serializer_class = StationSerializer
+    filterset_class = StationFilterSet
 
 
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all().select_related("source", "destination")
     serializer_class = RouteSerializer
+    filterset_class = RouteFilterSet
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -65,6 +78,7 @@ class JourneyViewSet(viewsets.ModelViewSet):
     )
     )
     serializer_class = JourneySerializer
+    filterset_class = JourneyFilterSet
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -77,6 +91,7 @@ class JourneyViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    filterset_class = OrderFilterSet
 
     def get_queryset(self):
         return (Order.objects.filter(user=self.request.user)
@@ -104,3 +119,4 @@ class OrderViewSet(viewsets.ModelViewSet):
 class CrewViewSet(viewsets.ModelViewSet):
     queryset = Crew.objects.all()
     serializer_class = CrewSerializer
+    filterset_class = CrewFilterSet

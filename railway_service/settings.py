@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "railway",
     "user",
     "rest_framework",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
@@ -72,6 +73,13 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        # ...
+    ),
+}
 
 DEBUG_TOOLBAR_CONFIG = {
     "RENDER_PANELS": True,
