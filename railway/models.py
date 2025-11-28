@@ -19,6 +19,10 @@ class Train(models.Model):
         related_name="trains",
     )
 
+    @property
+    def total_places(self):
+        return self.cargo_num * self.places_in_cargo
+
     def __str__(self):
         return f"{self.name} ({self.places_in_cargo})"
 
@@ -45,9 +49,24 @@ class Route(models.Model):
     )
     distance = models.IntegerField()
 
+    @property
+    def full_route(self):
+        return f"{self.source.name} - {self.destination.name}"
+
     def __str__(self):
-        return (f"{self.source.name} -> {self.destination.name}"
-                f" ({self.distance})")
+        return f"{self.full_route} ({self.distance})"
+
+
+class Crew(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def __str__(self):
+        return f"{self.full_name}"
 
 
 class Journey(models.Model):
@@ -63,6 +82,7 @@ class Journey(models.Model):
     )
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
+    crew = models.ManyToManyField(Crew)
 
     def __str__(self):
         return (f"{self.train.name} - {self.route.__str__()} "
@@ -97,11 +117,3 @@ class Ticket(models.Model):
 
     def __str__(self):
         return f"{self.seat}, {self.cargo}"
-
-
-class Crew(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
