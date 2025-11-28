@@ -11,6 +11,11 @@ from railway.models import (
     Ticket,
     Crew,
 )
+from railway.validators import (
+    RouteValidationMixin,
+    JourneyValidationMixin,
+    TicketValidationMixin,
+)
 
 
 class TrainTypeSerializer(serializers.ModelSerializer):
@@ -24,6 +29,7 @@ class TrainSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field="name",
     )
+
     class Meta:
         model = Train
         fields = (
@@ -42,7 +48,7 @@ class StationSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "latitude", "longitude")
 
 
-class RouteSerializer(serializers.ModelSerializer):
+class RouteSerializer(RouteValidationMixin, serializers.ModelSerializer):
     class Meta:
         model = Route
         fields = ("id", "source", "destination", "distance")
@@ -68,7 +74,7 @@ class CrewSerializer(serializers.ModelSerializer):
         fields = ("id", "first_name", "last_name")
 
 
-class JourneySerializer(serializers.ModelSerializer):
+class JourneySerializer(JourneyValidationMixin, serializers.ModelSerializer):
     class Meta:
         model = Journey
         fields = ("id", "route", "train", "departure_time", "arrival_time", "crew")
@@ -95,13 +101,14 @@ class JourneyDetailSerializer(JourneySerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
-    journey = JourneyListSerializer(many=False, read_only=True)
+    journey = JourneyListSerializer(many=False, read_only=False)
+
     class Meta:
         model = Ticket
         fields = ("id", "cargo", "seat", "journey")
 
 
-class TicketCreateSerializer(serializers.ModelSerializer):
+class TicketCreateSerializer(TicketValidationMixin, serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ("cargo", "seat", "journey")
@@ -109,6 +116,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     tickets = TicketCreateSerializer(many=True, read_only=False, allow_empty=False)
+
     class Meta:
         model = Order
         fields = ("id", "created_at", "tickets")

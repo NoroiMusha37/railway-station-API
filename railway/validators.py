@@ -23,7 +23,7 @@ class JourneyValidationMixin:
         instance_id = getattr(self.instance, "id", None)
 
         # departure time should be <= arrival time
-        if departure >= arrival:
+        if departure > arrival:
             raise serializers.ValidationError(
                 {"arrival_time": "departure must be earlier than arrival"}
             )
