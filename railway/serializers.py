@@ -25,9 +25,9 @@ class TrainTypeSerializer(serializers.ModelSerializer):
 
 
 class TrainSerializer(serializers.ModelSerializer):
-    train_type = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field="name",
+    train_type = serializers.CharField(
+        source="train_type.name",
+        read_only=False,
     )
 
     class Meta:
@@ -55,11 +55,11 @@ class RouteSerializer(RouteValidationMixin, serializers.ModelSerializer):
 
 
 class RouteListSerializer(RouteSerializer):
-    source = serializers.SlugRelatedField(
-        read_only=True, slug_field="name"
+    source = serializers.CharField(
+        source="source.name", read_only=True
     )
-    destination = serializers.SlugRelatedField(
-        read_only=True, slug_field="name"
+    destination = serializers.CharField(
+        source="destination.name", read_only=True
     )
 
 
@@ -89,11 +89,11 @@ class JourneySerializer(JourneyValidationMixin, serializers.ModelSerializer):
 
 
 class JourneyListSerializer(JourneySerializer):
-    route = serializers.SlugRelatedField(
-        read_only=True, slug_field="full_route"
+    route = serializers.CharField(
+        source="route.full_route", read_only=True
     )
-    train = serializers.SlugRelatedField(
-        read_only=True, slug_field="name"
+    train = serializers.CharField(
+        source="train.name", read_only=True
     )
     crew = serializers.SlugRelatedField(
         many=True,
