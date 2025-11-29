@@ -1,6 +1,7 @@
 from django.db.models import Prefetch, F, Count
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from railway.models import (
@@ -131,6 +132,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     filterset_class = OrderFilterSet
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return (Order.objects.filter(user=self.request.user)
