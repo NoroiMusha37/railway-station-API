@@ -137,8 +137,10 @@ class Journey(models.Model):
         return str(self.arrival_time - self.departure_time)
 
     def __str__(self):
-        return (f"{self.train.name} - {self.route.__str__()} "
-                f"({self.departure_time}, {self.arrival_time})")
+        return (
+            f"{self.train.name} - {self.route.__str__()} "
+            f"({self.departure_time}, {self.arrival_time})"
+        )
 
 
 class Order(models.Model):

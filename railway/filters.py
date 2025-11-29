@@ -54,28 +54,22 @@ class JourneyFilterSet(filters.FilterSet):
         label="Departure date",
     )
     departure_range = filters.DateFromToRangeFilter(
-        field_name="departure_time",
-        label="Departure date range"
+        field_name="departure_time", label="Departure date range"
     )
     arrival = filters.DateFilter(
-        field_name="arrival_time",
-        lookup_expr="date",
-        label="Arrival date"
+        field_name="arrival_time", lookup_expr="date", label="Arrival date"
     )
     arrival_range = filters.DateFromToRangeFilter(
-        field_name="arrival_time",
-        label="Arrival date range"
+        field_name="arrival_time", label="Arrival date range"
     )
 
 
 class OrderFilterSet(filters.FilterSet):
     created_at = filters.DateTimeFilter(
-        field_name="created_at",
-        label="Created at"
+        field_name="created_at", label="Created at"
     )
     created_range = filters.DateRangeFilter(
-        field_name="created_at",
-        label="Created at range"
+        field_name="created_at", label="Created at range"
     )
 
 

@@ -26,8 +26,7 @@ class TrainTypeSerializer(serializers.ModelSerializer):
 
 class TrainSerializer(serializers.ModelSerializer):
     train_type = serializers.SlugRelatedField(
-        slug_field="name",
-        queryset=TrainType.objects.all()
+        slug_field="name", queryset=TrainType.objects.all()
     )
 
     class Meta:
@@ -68,9 +67,7 @@ class RouteSerializer(RouteValidationMixin, serializers.ModelSerializer):
 
 
 class RouteListSerializer(RouteSerializer):
-    source = serializers.CharField(
-        source="source.name", read_only=True
-    )
+    source = serializers.CharField(source="source.name", read_only=True)
     destination = serializers.CharField(
         source="destination.name", read_only=True
     )
@@ -103,17 +100,13 @@ class JourneySerializer(JourneyValidationMixin, serializers.ModelSerializer):
             "departure_time",
             "arrival_time",
             "journey_time",
-            "crew"
+            "crew",
         )
 
 
 class JourneyListSerializer(JourneySerializer):
-    route = serializers.CharField(
-        source="route.full_route", read_only=True
-    )
-    train = serializers.CharField(
-        source="train.name", read_only=True
-    )
+    route = serializers.CharField(source="route.full_route", read_only=True)
+    train = serializers.CharField(source="train.name", read_only=True)
     crew = serializers.SlugRelatedField(
         many=True,
         read_only=True,
@@ -167,14 +160,19 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = ("id", "cargo", "seat", "journey")
 
 
-class TicketCreateSerializer(TicketValidationMixin, serializers.ModelSerializer):
+class TicketCreateSerializer(
+    TicketValidationMixin,
+    serializers.ModelSerializer
+):
     class Meta:
         model = Ticket
         fields = ("cargo", "seat", "journey")
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    tickets = TicketCreateSerializer(many=True, read_only=False, allow_empty=False)
+    tickets = TicketCreateSerializer(
+        many=True, read_only=False, allow_empty=False
+    )
 
     class Meta:
         model = Order

@@ -13,7 +13,8 @@ from railway.models import (
     Route,
     Journey,
     Order,
-    Crew, Ticket,
+    Crew,
+    Ticket,
 )
 from railway.serializers import (
     TrainTypeSerializer,
@@ -49,7 +50,7 @@ from railway.filters import (
             name="name",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter by train type name"
+            description="Filter by train type name",
         ),
     ]
 )
@@ -65,7 +66,7 @@ class TrainTypeViewSet(viewsets.ModelViewSet):
             name="name",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter by train name"
+            description="Filter by train name",
         ),
     ]
 )
@@ -98,7 +99,7 @@ class TrainViewSet(viewsets.ModelViewSet):
             name="name",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter by station name"
+            description="Filter by station name",
         ),
     ]
 )
@@ -131,13 +132,13 @@ class StationViewSet(viewsets.ModelViewSet):
             name="source",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter by source station name."
+            description="Filter by source station name.",
         ),
         OpenApiParameter(
             name="destination",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter by destination station name."
+            description="Filter by destination station name.",
         ),
     ]
 )
@@ -160,68 +161,69 @@ class RouteViewSet(viewsets.ModelViewSet):
             name="source",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter by source station name."
+            description="Filter by source station name.",
         ),
         OpenApiParameter(
             name="destination",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter by destination station name."
+            description="Filter by destination station name.",
         ),
         OpenApiParameter(
             name="train",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter by train name."
+            description="Filter by train name.",
         ),
         OpenApiParameter(
             name="departure_date",
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description="Journeys departing on a given date."
+            description="Journeys departing on a given date.",
         ),
         OpenApiParameter(
             name="departure_range_after",
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description="Start of the departure date range."
+            description="Start of the departure date range.",
         ),
         OpenApiParameter(
             name="departure_range_before",
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description="End of the departure date range."
+            description="End of the departure date range.",
         ),
         OpenApiParameter(
             name="arrival",
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description="Journeys arriving on a given date."
+            description="Journeys arriving on a given date.",
         ),
         OpenApiParameter(
             name="arrival_range_after",
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description="Start of arrival date range."
+            description="Start of arrival date range.",
         ),
         OpenApiParameter(
             name="arrival_range_before",
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description="End of arrival date range."
+            description="End of arrival date range.",
         ),
     ]
 )
 class JourneyViewSet(viewsets.ModelViewSet):
-    queryset = (Journey.objects.all()
-    .prefetch_related("crew")
-    .select_related("route__source", "route__destination")
-    .select_related("train__train_type")
-    .annotate(
-        tickets_available=F("train__cargo_num")
-                          * F("train__places_in_cargo")
-                          - Count("tickets")
-    )
+    queryset = (
+        Journey.objects.all()
+        .prefetch_related("crew")
+        .select_related("route__source", "route__destination")
+        .select_related("train__train_type")
+        .annotate(
+            tickets_available=F("train__cargo_num")
+            * F("train__places_in_cargo")
+            - Count("tickets")
+        )
     )
     serializer_class = JourneySerializer
     filterset_class = JourneyFilterSet
@@ -240,19 +242,19 @@ class JourneyViewSet(viewsets.ModelViewSet):
             name="created_at",
             type=OpenApiTypes.DATETIME,
             location=OpenApiParameter.QUERY,
-            description="Filter orders created at the given timestamp."
+            description="Filter orders created at the given timestamp.",
         ),
         OpenApiParameter(
             name="created_range_after",
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description="Start of creation date range."
+            description="Start of creation date range.",
         ),
         OpenApiParameter(
             name="created_range_before",
             type=OpenApiTypes.DATE,
             location=OpenApiParameter.QUERY,
-            description="End of creation date range."
+            description="End of creation date range.",
         ),
     ]
 )
@@ -263,17 +265,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return (Order.objects.filter(user=self.request.user)
-        .prefetch_related(
+        return Order.objects.filter(user=self.request.user).prefetch_related(
             Prefetch(
                 "tickets",
                 queryset=Ticket.objects.select_related(
                     "journey__train",
                     "journey__route__source",
                     "journey__route__destination",
-                ).prefetch_related("journey__crew")
+                ).prefetch_related("journey__crew"),
             )
-        )
         )
 
     def get_serializer_class(self):
@@ -291,13 +291,13 @@ class OrderViewSet(viewsets.ModelViewSet):
             name="first_name",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter crew by first name."
+            description="Filter crew by first name.",
         ),
         OpenApiParameter(
             name="last_name",
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
-            description="Filter crew by last name."
+            description="Filter crew by last name.",
         ),
     ]
 )

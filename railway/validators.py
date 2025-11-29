@@ -6,23 +6,27 @@ from railway.models import Journey
 class RouteValidationMixin:
     def validate(self, attrs):
         source = attrs.get("source") or getattr(self.instance, "source", None)
-        destination = (attrs.get("destination") or
-                       getattr(self.instance, "destination", None))
+        destination = attrs.get("destination") or getattr(
+            self.instance, "destination", None
+        )
 
         # source and destination stations should be different
         if source == destination:
             raise serializers.ValidationError(
-                {"destination": "source and destination cannot be the same"})
+                {"destination": "source and destination cannot be the same"}
+            )
 
         return attrs
 
 
 class JourneyValidationMixin:
     def validate(self, attrs):
-        departure = (attrs.get("departure_time") or
-                     getattr(self.instance, "departure_time", None))
-        arrival = (attrs.get("arrival_time") or
-                   getattr(self.instance, "arrival_time", None))
+        departure = attrs.get("departure_time") or getattr(
+            self.instance, "departure_time", None
+        )
+        arrival = attrs.get("arrival_time") or getattr(
+            self.instance, "arrival_time", None
+        )
         train = attrs.get("train") or getattr(self.instance, "train", None)
         crew = attrs.get("crew")
         if crew is None:
@@ -41,7 +45,8 @@ class JourneyValidationMixin:
                 {"departure_time": "departure cannot be in past"}
             )
 
-        # train shouldn't be on another journey at [departure_time; arrival_time]
+        # train shouldn't be on another journey
+        # at [departure_time; arrival_time]
         busy_train = Journey.objects.filter(
             train=train,
             departure_time__lte=arrival,
@@ -55,7 +60,8 @@ class JourneyValidationMixin:
                 {"train": f"the train is busy in {departure} - {arrival}"}
             )
 
-        # any crew member shouldn't be on another journey at [departure_time; arrival_time]
+        # any crew member shouldn't be on another journey
+        # at [departure_time; arrival_time]
         busy_crew = Journey.objects.filter(
             crew__in=crew,
             departure_time__lte=arrival,
@@ -67,8 +73,8 @@ class JourneyValidationMixin:
 
         if busy_crew.exists():
             raise serializers.ValidationError(
-                {"crew": f"some crew members are busy in "
-                         f"{departure} - {arrival}"}
+                {"crew": f"some crew members are busy "
+                         f"in {departure} - {arrival}"}
             )
 
         return attrs
@@ -82,8 +88,8 @@ class TicketValidationMixin:
         seat = attrs.get("seat") or getattr(self.instance, "seat", None)
         if seat is None:
             seat = getattr(self.instance, "seat", None)
-        journey = (attrs.get("journey") or
-                   getattr(self.instance, "journey", None))
+        journey = (attrs.get("journey")
+                   or getattr(self.instance, "journey", None))
         train = journey.train
 
         # booked cargo should be in range [1; train_cargos]

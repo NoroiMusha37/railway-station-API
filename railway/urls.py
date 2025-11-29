@@ -8,7 +8,8 @@ from railway.views import (
     StationViewSet,
     RouteViewSet,
     JourneyViewSet,
-    OrderViewSet, CrewViewSet,
+    OrderViewSet,
+    CrewViewSet,
 )
 
 
@@ -21,6 +22,6 @@ router.register("routes", RouteViewSet)
 router.register("journeys", JourneyViewSet)
 router.register("orders", OrderViewSet)
 router.register("crew", CrewViewSet)
-urlpatterns = [
-    path("", include(router.urls))
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns = [path("", include(router.urls))] + static(
+    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+)
