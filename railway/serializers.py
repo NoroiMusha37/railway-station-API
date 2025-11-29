@@ -25,9 +25,9 @@ class TrainTypeSerializer(serializers.ModelSerializer):
 
 
 class TrainSerializer(serializers.ModelSerializer):
-    train_type = serializers.CharField(
-        source="train_type.name",
-        read_only=False,
+    train_type = serializers.SlugRelatedField(
+        slug_field="name",
+        queryset=TrainType.objects.all()
     )
 
     class Meta:
@@ -39,13 +39,26 @@ class TrainSerializer(serializers.ModelSerializer):
             "places_in_cargo",
             "total_places",
             "train_type",
+            "image",
         )
+
+
+class TrainImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Train
+        fields = ("id", "image")
 
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        fields = ("id", "name", "latitude", "longitude")
+        fields = ("id", "name", "latitude", "longitude", "image")
+
+
+class StationImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Station
+        fields = ("id", "image")
 
 
 class RouteSerializer(RouteValidationMixin, serializers.ModelSerializer):
@@ -71,7 +84,13 @@ class RouteDetailSerializer(RouteSerializer):
 class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
-        fields = ("id", "first_name", "last_name")
+        fields = ("id", "first_name", "last_name", "image")
+
+
+class CrewImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Crew
+        fields = ("id", "image")
 
 
 class JourneySerializer(JourneyValidationMixin, serializers.ModelSerializer):

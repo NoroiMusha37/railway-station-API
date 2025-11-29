@@ -1,6 +1,10 @@
+import os
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils.text import slugify
 
 
 class TrainType(models.Model):
@@ -13,8 +17,15 @@ class TrainType(models.Model):
         return self.name
 
 
+def train_image_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.name)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/trains/", filename)
+
+
 class Train(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     cargo_num = models.IntegerField(validators=[MinValueValidator(1)])
     places_in_cargo = models.IntegerField(validators=[MinValueValidator(1)])
     train_type = models.ForeignKey(
@@ -22,6 +33,7 @@ class Train(models.Model):
         on_delete=models.CASCADE,
         related_name="trains",
     )
+    image = models.ImageField(null=True, upload_to=train_image_path)
 
     class Meta:
         ordering = ["name"]
@@ -34,10 +46,18 @@ class Train(models.Model):
         return f"{self.name} ({self.places_in_cargo})"
 
 
+def station_image_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.name)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/stations/", filename)
+
+
 class Station(models.Model):
     name = models.CharField(max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    image = models.ImageField(null=True, upload_to=station_image_path)
 
     class Meta:
         ordering = ["name"]
@@ -71,9 +91,17 @@ class Route(models.Model):
         return f"{self.full_route} ({self.distance})"
 
 
+def crew_image_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.name)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/crew/", filename)
+
+
 class Crew(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    image = models.ImageField(null=True, upload_to=crew_image_path)
 
     class Meta:
         ordering = ["first_name", "last_name"]

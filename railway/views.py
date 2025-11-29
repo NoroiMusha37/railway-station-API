@@ -1,5 +1,7 @@
 from django.db.models import Prefetch, F, Count
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from railway.models import (
     TrainType,
@@ -13,7 +15,9 @@ from railway.models import (
 from railway.serializers import (
     TrainTypeSerializer,
     TrainSerializer,
+    TrainImageSerializer,
     StationSerializer,
+    StationImageSerializer,
     RouteSerializer,
     RouteListSerializer,
     RouteDetailSerializer,
@@ -23,6 +27,7 @@ from railway.serializers import (
     OrderSerializer,
     OrderListSerializer,
     CrewSerializer,
+    CrewImageSerializer,
 )
 from railway.filters import (
     TrainTypeFilterSet,
@@ -46,11 +51,45 @@ class TrainViewSet(viewsets.ModelViewSet):
     serializer_class = TrainSerializer
     filterset_class = TrainFilterSet
 
+    def get_serializer_class(self):
+        if self.action == "upload_image":
+            return TrainImageSerializer
+        return TrainSerializer
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="upload-image",
+    )
+    def upload_image(self, request, pk=None):
+        train = self.get_object()
+        serializer = self.get_serializer(train, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class StationViewSet(viewsets.ModelViewSet):
     queryset = Station.objects.all()
     serializer_class = StationSerializer
     filterset_class = StationFilterSet
+
+    def get_serializer_class(self):
+        if self.action == "upload_image":
+            return StationImageSerializer
+        return StationSerializer
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="upload-image",
+    )
+    def upload_image(self, request, pk=None):
+        station = self.get_object()
+        serializer = self.get_serializer(station, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RouteViewSet(viewsets.ModelViewSet):
@@ -120,3 +159,20 @@ class CrewViewSet(viewsets.ModelViewSet):
     queryset = Crew.objects.all()
     serializer_class = CrewSerializer
     filterset_class = CrewFilterSet
+
+    def get_serializer_class(self):
+        if self.action == "upload_image":
+            return CrewImageSerializer
+        return CrewSerializer
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="upload-image",
+    )
+    def upload_image(self, request, pk=None):
+        crew = self.get_object()
+        serializer = self.get_serializer(crew, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
