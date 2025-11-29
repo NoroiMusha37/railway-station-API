@@ -14,9 +14,9 @@ RUN mkdir -p /files/media
 RUN adduser \
     --disabled-password \
     --no-create-home \
-    my_adduser
+    my_user
 
 RUN chown -R my_user /files/media
-RUN chown -R 755 /files/media
+RUN chmod -R 755 /files/media
 
 USER my_user
