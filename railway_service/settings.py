@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "rest_framework.authtoken",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -153,14 +154,27 @@ REST_FRAMEWORK = {
         "anon": "100/day",
         "user": "1000/day"
     },
-    "DEFAULT_PAGINATION_CLASS": (
+    "DEFAULT_PAGINATION_CLASS":
         "rest_framework.pagination.LimitOffsetPagination",
-    ),
     "PAGE_SIZE": 100,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Railway Service API",
+    "DESCRIPTION": "Order railway tickets",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "defaultModelRendering": "model",
+        "defaultModelsExpandDepth": 2,
+        "defaultModelExpandDepth": 2,
+    },
 }
